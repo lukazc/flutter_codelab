@@ -54,21 +54,23 @@ class MyHomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var appState = context.watch<MyAppState>();
-    var pair = appState.currentWordPair;
+    var wordPair = appState.currentWordPair;
 
     return Scaffold(
-      body: Column(
-        children: [
-          Text('A random idea:'),
-          BigCard(pair: pair),
-           // ↓ Add this.
-          ElevatedButton(
-            onPressed: () {
-              appState.getNext();
-            },
-            child: Text('Next'),
-          ),
-        ],
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            BigCard(wordPair: wordPair),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {
+                appState.getNext();
+              },
+              child: Text('Next'),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -77,10 +79,10 @@ class MyHomePage extends StatelessWidget {
 class BigCard extends StatelessWidget {
   const BigCard({
     super.key,
-    required this.pair,
+    required this.wordPair,
   });
 
-  final WordPair pair;
+  final WordPair wordPair;
 
   @override
   Widget build(BuildContext context) {
@@ -91,11 +93,12 @@ class BigCard extends StatelessWidget {
   
     return Card(
       color: theme.colorScheme.primary,
+      elevation: 6,
       child: Padding(
         padding: const EdgeInsets.all(20.0),
         child: Text(
-          pair.asLowerCase,
-          semanticsLabel: "${pair.first} ${pair.second}",
+          wordPair.asLowerCase,
+          semanticsLabel: "${wordPair.first} ${wordPair.second}",
           style: textStyle
         ),
       ),

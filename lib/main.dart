@@ -60,7 +60,7 @@ class MyHomePage extends StatelessWidget {
       body: Column(
         children: [
           Text('A random idea:'),
-          Card(pair: pair),
+          BigCard(pair: pair),
            // ↓ Add this.
           ElevatedButton(
             onPressed: () {
@@ -74,8 +74,8 @@ class MyHomePage extends StatelessWidget {
   }
 }
 
-class Card extends StatelessWidget {
-  const Card({
+class BigCard extends StatelessWidget {
+  const BigCard({
     super.key,
     required this.pair,
   });
@@ -84,6 +84,11 @@ class Card extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text(pair.asLowerCase);
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Text(pair.asLowerCase),
+      ),
+    );
   }
 }

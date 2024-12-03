@@ -74,7 +74,7 @@ class _HomePageState extends State<HomePage> {
       case 0:
         return GeneratorPage();
       case 1:
-        return Placeholder();
+        return FavoritesPage();
       default:
         throw UnimplementedError('no page for index $selectedPageIndex');
     }
@@ -82,42 +82,67 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        return Scaffold(
-          body: Row(
-            children: [
-              SafeArea(
-                child: NavigationRail(
-                  extended: constraints.maxWidth > 600,
-                  destinations: [
-                    NavigationRailDestination(
-                      icon: Icon(Icons.home),
-                      label: Text('Home'),
-                    ),
-                    NavigationRailDestination(
-                      icon: Icon(Icons.favorite),
-                      label: Text('Favorites'),
-                    ),
-                  ],
-                  selectedIndex: selectedPageIndex,
-                  onDestinationSelected: (value) {
-                    setState(() {
-                      selectedPageIndex = value;
-                    });
+    return LayoutBuilder(builder: (context, constraints) {
+      return Scaffold(
+        body: Row(
+          children: [
+            SafeArea(
+              child: NavigationRail(
+                extended: constraints.maxWidth > 600,
+                destinations: [
+                  NavigationRailDestination(
+                    icon: Icon(Icons.home),
+                    label: Text('Home'),
+                  ),
+                  NavigationRailDestination(
+                    icon: Icon(Icons.favorite),
+                    label: Text('Favorites'),
+                  ),
+                ],
+                selectedIndex: selectedPageIndex,
+                onDestinationSelected: (value) {
+                  setState(() {
+                    selectedPageIndex = value;
+                  });
+                },
+              ),
+            ),
+            Expanded(
+              child: Container(
+                color: Theme.of(context).colorScheme.primaryContainer,
+                child: getPage(),
+              ),
+            ),
+          ],
+        ),
+      );
+    });
+  }
+}
+
+class FavoritesPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    var appState = context.watch<AppState>();
+    var favoriteWordPairs = appState.favoriteWordPairs;
+
+    if (favoriteWordPairs.isEmpty) {
+      return Center(
+        child: Text('No favorites yet'),
+      );
+    }
+
+    return Scaffold(
+      body: ListView(
+        children: favoriteWordPairs
+            .map((wordPair) => ListTile(
+                  title: Text(wordPair.asLowerCase),
+                  onTap: () {
+                    appState.currentWordPair = wordPair;
                   },
-                ),
-              ),
-              Expanded(
-                child: Container(
-                  color: Theme.of(context).colorScheme.primaryContainer,
-                  child: getPage(),
-                ),
-              ),
-            ],
-          ),
-        );
-      }
+                ))
+            .toList(),
+      ),
     );
   }
 }
@@ -127,6 +152,14 @@ class GeneratorPage extends StatelessWidget {
   Widget build(BuildContext context) {
     var appState = context.watch<AppState>();
     var wordPair = appState.currentWordPair;
+
+    Widget getIcon() {
+      if (appState.favoriteWordPairs.contains(wordPair)) {
+        return Icon(Icons.favorite);
+      } else {
+        return Icon(Icons.favorite_border);
+      }
+    }
 
     return Scaffold(
       body: Center(
@@ -142,11 +175,7 @@ class GeneratorPage extends StatelessWidget {
                   onPressed: () {
                     appState.toggleFavorite();
                   },
-                  icon: Icon(
-                    appState.favoriteWordPairs.contains(wordPair)
-                        ? Icons.favorite
-                        : Icons.favorite_border,
-                  ),
+                  icon: getIcon(),
                   label: Text('Favorite'),
                 ),
                 SizedBox(width: 20),

@@ -69,6 +69,17 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   var selectedPageIndex = 0;
 
+  Widget getPage() {
+    switch (selectedPageIndex) {
+      case 0:
+        return GeneratorPage();
+      case 1:
+        return Placeholder();
+      default:
+        throw UnimplementedError('no page for index $selectedPageIndex');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -98,7 +109,7 @@ class _HomePageState extends State<HomePage> {
           Expanded(
             child: Container(
               color: Theme.of(context).colorScheme.primaryContainer,
-              child: GeneratorPage(),
+              child: getPage(),
             ),
           ),
         ],

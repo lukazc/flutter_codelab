@@ -48,6 +48,17 @@ class MyAppState extends ChangeNotifier {
     currentWordPair = WordPair.random();
     notifyListeners();
   }
+
+  var favoriteWordPairs = <WordPair>{};
+
+  void toggleFavorite() {
+    if (favoriteWordPairs.contains(currentWordPair)) {
+      favoriteWordPairs.remove(currentWordPair);
+    } else {
+      favoriteWordPairs.add(currentWordPair);
+    }
+    notifyListeners();
+  }
 }
 
 class MyHomePage extends StatelessWidget {
@@ -63,11 +74,28 @@ class MyHomePage extends StatelessWidget {
           children: [
             BigCard(wordPair: wordPair),
             SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                appState.getNext();
-              },
-              child: Text('Next'),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ElevatedButton.icon(
+                  onPressed: () {
+                    appState.toggleFavorite();
+                  },
+                  icon: Icon(
+                    appState.favoriteWordPairs.contains(wordPair)
+                        ? Icons.favorite
+                        : Icons.favorite_border,
+                  ),
+                  label: Text('Favorite'),
+                ),
+                SizedBox(width: 20),
+                ElevatedButton(
+                  onPressed: () {
+                    appState.getNext();
+                  },
+                  child: Text('Next'),
+                ),
+              ],
             ),
           ],
         ),
@@ -90,17 +118,15 @@ class BigCard extends StatelessWidget {
     final textStyle = theme.textTheme.displayMedium!.copyWith(
       color: theme.colorScheme.onPrimary,
     );
-  
+
     return Card(
       color: theme.colorScheme.primary,
       elevation: 6,
       child: Padding(
         padding: const EdgeInsets.all(20.0),
-        child: Text(
-          wordPair.asLowerCase,
-          semanticsLabel: "${wordPair.first} ${wordPair.second}",
-          style: textStyle
-        ),
+        child: Text(wordPair.asLowerCase,
+            semanticsLabel: "${wordPair.first} ${wordPair.second}",
+            style: textStyle),
       ),
     );
   }
